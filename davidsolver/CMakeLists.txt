@@ -11,8 +11,9 @@ set(DAVID_SOURCES
     module_base/module_device/device.cpp
     module_base/module_device/memory_op.cpp
     
-    module_hsolver/kernels/dngvd_op.cpp
+    # module_hsolver/kernels/dngvd_op.cpp
     module_hsolver/kernels/math_kernel_op.cpp
+    module_hsolver/kernels/dngvd_op.cpp
 )
 
 # 添加库

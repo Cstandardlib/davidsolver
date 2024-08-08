@@ -1,6 +1,6 @@
-#include "davidsolver/module_hsolver/kernels/math_kernel_op.h"
+#include "davidsolver/module_hsolver/kernels/math_kernel_op.h" // gemm_op
 #include "davidsolver/module_base/module_device/memory_op.h" // synchronize_memory_op
-#include "davidsolver/diago_david.h"
+#include "davidsolver/diago_david.h" // DiagoDavid
 
 #include "davidsolver/utils.h" // print vector and matrix
 
@@ -12,19 +12,6 @@
 using T = std::complex<double>;
 using Real = double;
 
-// template<typename T>
-// void printVector(const std::vector<T>& vec) {
-//     std::cout << "[";
-//     for (size_t i = 0; i < vec.size(); ++i) {
-//         std::cout << vec[i];
-//         if (i < vec.size() - 1) {
-//             std::cout << ", ";
-//         }
-//     }
-//     std::cout << "]";
-//     std::cout << std::endl;
-// }
-
 int main(int argc, char **argv) {
 
 #ifdef __MPI
@@ -35,10 +22,12 @@ int main(int argc, char **argv) {
 
     const int dim = 10; //25;
     const int nband = 2; //5;
-    const int david_ndim = 4; //4;
+    const int david_ndim = 2; //4;
     const bool use_paw = false;
 
     std::vector<double> precondition(dim, 1.0);
+    std::cout << "precondition = "<< std::endl;
+    printVector(precondition, dim);
 
     hsolver::DiagoDavid<T, base_device::DEVICE_CPU> dav(
         precondition.data(),
@@ -48,9 +37,19 @@ int main(int argc, char **argv) {
 
     // 构造H矩阵
     std::vector<T> h_mat(dim * dim, T(0.0, 0.0));
-    // 填充对角线元素为1
+    // 填充对角线元素为1+i
     for (int i = 0; i < dim; ++i) {
-        h_mat[i * dim + i] = T(1.0, 0.0);
+        h_mat[i * dim + i] = T(i+1.0, 0.0);
+    }
+    for (int i = 1; i < dim; ++i) {
+        for (int j = 0; j < i; ++j) {
+            T random_value = T(
+                static_cast<double>(rand() % dim), // 随机实部
+                static_cast<double>(rand() % dim)  // 随机虚部
+            );
+            h_mat[i * dim + j] = random_value;
+            h_mat[j * dim + i] = std::conj(random_value);
+        }
     }
 
     std::cout << "h_mat = "<< std::endl; printVector(h_mat, dim);
@@ -97,9 +96,9 @@ int main(int argc, char **argv) {
     std::uniform_real_distribution<> dis(0.0, 1.0); // [0.0, 1.0) 范围内的随机浮点数
 
     // 使用随机数填充 vector
-    // for (auto& elem : psi) {
-    //     elem = dis(gen); // 生成随机数并赋值给 vector 中的元素
-    // }
+    for (auto& elem : psi) {
+        elem = dis(gen); // 生成随机数并赋值给 vector 中的元素
+    }
     for (int i = 0; i < dim; ++i) {
         for (int j = 0; j < nband; ++j) {
             psi[j * dim + i] = T(j==i, 0.0);
