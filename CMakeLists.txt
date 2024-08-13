@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 project(davidsolver VERSION 1.0
                   DESCRIPTION "Very primitive project"
@@ -10,6 +10,8 @@ set(SOURCES main.cpp)
 # 添加子目录
 add_subdirectory(davidsolver)
 include_directories(davidsolver)
+add_subdirectory(fast_matrix_market)
+include_directories(fast_matrix_market/include)
 
 # 查找 OpenBLAS 库
 find_package(BLAS REQUIRED)

@@ -4,6 +4,8 @@
 
 #include "davidsolver/utils.h" // print vector and matrix
 
+#include <fast_matrix_market/fast_matrix_market.hpp>
+
 #include <complex>
 #include <iostream>
 #include <random> // for random init of eigenvectors
