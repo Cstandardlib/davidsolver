@@ -1,3 +1,0 @@
-[submodule "davidsolver/fast_matrix_market"]
-	path = davidsolver/fast_matrix_market
-	url = git@github.com:alugowski/fast_matrix_market.git
