@@ -1119,7 +1119,7 @@ void DiagoDavid<T, Device>::SchmidtOrth(const int& dim,
     double psi_norm = get_real(var);
 
     // !!test
-    // assert(psi_norm > 0.0);
+    assert(psi_norm > 0.0);
 
     gemv_op<T, Device>()(this->ctx,
                               'N',
@@ -1148,7 +1148,7 @@ void DiagoDavid<T, Device>::SchmidtOrth(const int& dim,
     // }
 
     // !!test
-    // assert(psi_norm > 0.0);
+    assert(psi_norm > 0.0);
 
     psi_norm = sqrt(psi_norm);
 

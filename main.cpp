@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     const hsolver::diag_comm_info comm_info = {0, 1};
 #endif
 
-    const int dim = 10; //25;
+    const int dim = 8; //25;
     const int nband = 2; //5;
     const int david_ndim = 2; //4;
     const bool use_paw = false;
@@ -41,16 +41,16 @@ int main(int argc, char **argv) {
     for (int i = 0; i < dim; ++i) {
         h_mat[i * dim + i] = T(i+1.0, 0.0);
     }
-    for (int i = 1; i < dim; ++i) {
-        for (int j = 0; j < i; ++j) {
-            T random_value = T(
-                static_cast<double>(rand() % dim), // 随机实部
-                static_cast<double>(rand() % dim)  // 随机虚部
-            );
-            h_mat[i * dim + j] = random_value;
-            h_mat[j * dim + i] = std::conj(random_value);
-        }
-    }
+    // for (int i = 1; i < dim; ++i) {
+    //     for (int j = 0; j < i; ++j) {
+    //         T random_value = T(
+    //             static_cast<double>(rand() % dim), // 随机实部
+    //             static_cast<double>(rand() % dim)  // 随机虚部
+    //         );
+    //         h_mat[i * dim + j] = random_value;
+    //         h_mat[j * dim + i] = std::conj(random_value);
+    //     }
+    // }
 
     std::cout << "h_mat = "<< std::endl; printVector(h_mat, dim);
     // for (int i = 0; i < h_mat.size(); ++i) {
