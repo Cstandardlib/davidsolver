@@ -4,7 +4,6 @@
 // #include "diagh.h"
 #include "module_base/macros.h"
 #include "diag_comm_info.h"
-#include "diag_const_nums.h"
 #include "module_base/module_device/memory_op.h"
 
 #include <functional>
@@ -205,8 +204,8 @@ class DiagoDavid
 
     // using hpsi_info = typename hamilt::Operator<T, Device>::hpsi_info;
 
-    const_nums<T> cs;
-    const T* one = nullptr, * zero = nullptr, * neg_one = nullptr;
+    const T *one = nullptr, *zero = nullptr, *neg_one = nullptr;
+    const T one_ = static_cast<T>(1.0), zero_ = static_cast<T>(0.0), neg_one_ = static_cast<T>(-1.0);
 };
 } // namespace hsolver
 
