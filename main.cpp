@@ -11,8 +11,15 @@
 #include <random> // for random init of eigenvectors
 #include <memory> // smart pointers
 
-using T = std::complex<double>;
+using T =
+// double;
+std::complex<double>;
 using Real = double;
+
+struct array_matrix {
+    int64_t nrows = 0, ncols = 0;
+    std::vector<T> vals;       // or int64_t, float, std::complex<double>, etc.
+} mat;
 
 int main(int argc, char **argv) {
 
@@ -27,7 +34,7 @@ int main(int argc, char **argv) {
     const int david_ndim = 2; //4;
     const bool use_paw = false;
 
-    std::vector<double> precondition(dim, 1.0);
+    std::vector<Real> precondition(dim, 1.0);
     std::cout << "precondition = "<< std::endl;
     printVector(precondition, dim);
 
@@ -38,10 +45,10 @@ int main(int argc, char **argv) {
         use_paw, comm_info);
 
     // 构造H矩阵
-    std::vector<T> h_mat(dim * dim, T(0.0, 0.0));
+    std::vector<T> h_mat(dim * dim, T(0.0));
     // 填充对角线元素为1+i
     for (int i = 0; i < dim; ++i) {
-        h_mat[i * dim + i] = T(i+1.0, 0.0);
+        h_mat[i * dim + i] = T(i+1.0);
     }
     // for (int i = 1; i < dim; ++i) {
     //     for (int j = 0; j < i; ++j) {
@@ -63,8 +70,8 @@ int main(int argc, char **argv) {
     auto hpsi_func = [h_mat](T *hpsi_out, T *psi_in,
                              const int nband_in, const int nbasis_in,
                              const int band_index1, const int band_index2) {
-        auto one = std::make_unique<T>(1.0, 0.0);
-        auto zero = std::make_unique<T>(0.0, 0.0);
+        auto one = std::make_unique<T>(1.0);
+        auto zero = std::make_unique<T>(0.0);
 
         // 智能指针自动转换为原始指针，所以可以直接传递给函数
         const T *one_ = one.get();
@@ -90,7 +97,7 @@ int main(int argc, char **argv) {
         base_device::memory::synchronize_memory_op<T, base_device::DEVICE_CPU, base_device::DEVICE_CPU>()(ctx, ctx, SX, X, nbands * nrow);
     };
 
-    std::vector<std::complex<double>> psi(dim * nband, 0.0);
+    std::vector<T> psi(dim * nband, 0.0);
     // 创建一个随机数生成器
     std::random_device rd;  // 非确定性随机数种子
     std::mt19937 gen(rd()); // 以 rd() 为种子初始化 Mersenne Twister 引擎
@@ -103,7 +110,7 @@ int main(int argc, char **argv) {
     }
     for (int i = 0; i < dim; ++i) {
         for (int j = 0; j < nband; ++j) {
-            psi[j * dim + i] = T(j==i, 0.0);
+            psi[j * dim + i] = T(j==i);
         }
     }
 

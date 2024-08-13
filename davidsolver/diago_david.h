@@ -13,7 +13,7 @@
 namespace hsolver
 {
 
-template <typename T = std::complex<double>, typename Device = base_device::DEVICE_CPU>
+template <typename T = double /*std::complex<double>*/, typename Device = base_device::DEVICE_CPU>
 class DiagoDavid
 //  : public DiagH<T, Device>
 {
