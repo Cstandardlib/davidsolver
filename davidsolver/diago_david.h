@@ -1,14 +1,13 @@
 #ifndef DIAGODAVID_H
 #define DIAGODAVID_H
 
-// #include "diagh.h"
 #include "module_base/macros.h"
 #include "diag_comm_info.h"
 #include "module_base/module_device/memory_op.h"
 
 #include <functional>
 
-#define DEBUG
+// #define DEBUG
 
 namespace hsolver
 {

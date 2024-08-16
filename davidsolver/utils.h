@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <complex>
+
+#define __LARGE_MATRIX
+
 // #include <Eigen/Dense>
 
 // template<typename T>
@@ -38,6 +41,9 @@
  */
 template <typename T>
 void printVector(const std::vector<T>& vec, const int dim){
+#ifdef __LARGE_MATRIX
+    return;
+#endif
     for (int i = 0; i < vec.size(); ++i) {
         std::cout << vec[i] << " ";
         if ((i + 1) % dim == 0) std::cout << std::endl; // 每 dim 个元素后换行
@@ -46,6 +52,9 @@ void printVector(const std::vector<T>& vec, const int dim){
 
 template <typename T>
 void printVector(const std::vector<std::complex<T>>& vec, const int dim){
+#ifdef __LARGE_MATRIX
+    return;
+#endif
     for (int i = 0; i < vec.size(); ++i) {
         std::cout << vec[i].real() << " ";
         if ((i + 1) % dim == 0) std::cout << std::endl; // 每 dim 个元素后换行
@@ -54,6 +63,9 @@ void printVector(const std::vector<std::complex<T>>& vec, const int dim){
 
 template <typename T>
 void printArray(const T *array, const int dim){
+#ifdef __LARGE_MATRIX
+    return;
+#endif
     for (int i = 0; i < dim; ++i) {
         std::cout << array[i] << " ";
     }
@@ -62,6 +74,9 @@ void printArray(const T *array, const int dim){
 
 template <typename T>
 void printArray(const std::complex<T> *array, const int dim){
+#ifdef __LARGE_MATRIX
+    return;
+#endif
     for (int i = 0; i < dim; ++i) {
         std::cout << array[i].real() << " ";
     }

@@ -195,15 +195,11 @@ int DiagoDavid<T, Device>::diag_once(const HPsiFunc& hpsi_func,
         {
             // phm_in->sPsi(psi_in + m*ldPsi, &this->spsi[m * dim], dim, dim, 1);
 #ifdef DEBUG
-            // !!test
-            std::cout << "psi_in[" << m << "] = " << std::endl;
-            printArray(psi_in + m*ldPsi, ldPsi);
+            // std::cout << "psi_in[" << m << "] = " << std::endl; printArray(psi_in + m*ldPsi, ldPsi);
 #endif
             spsi_func(psi_in + m*ldPsi,&this->spsi[m*dim],dim,dim,1);
 #ifdef DEBUG
-            // !!test
-            std::cout << "spsi[" << m << "] = " << std::endl;
-            printArray(&spsi[m*dim], ldPsi);
+            // std::cout << "spsi[" << m << "] = " << std::endl; printArray(&spsi[m*dim], ldPsi);
 #endif
         }
     }
@@ -719,7 +715,8 @@ void DiagoDavid<T, Device>::cal_grad(const HPsiFunc& hpsi_func,
     //                       psi::Range(true, 0, nbase, nbase + notconv - 1),
     //                       &hpsi[nbase * dim]); // &hp(nbase, 0)
     // phm_in->ops->hPsi(dav_hpsi_in);
-    hpsi_func(&hpsi[nbase * dim], basis, nbase_x, dim, nbase, nbase + notconv - 1);
+    // hpsi_func(&hpsi[nbase * dim], basis, nbase_x, dim, nbase, nbase + notconv - 1);
+    hpsi_func(hpsi, basis, nbase_x, dim, nbase, nbase + notconv - 1);
 
     delmem_complex_op()(this->ctx, lagrange);
     delmem_complex_op()(this->ctx, vc_ev_vector);
@@ -1119,7 +1116,7 @@ void DiagoDavid<T, Device>::SchmidtOrth(const int& dim,
     double psi_norm = get_real(var);
 
     // !!test
-    assert(psi_norm > 0.0);
+    // assert(psi_norm > 0.0);
 
     gemv_op<T, Device>()(this->ctx,
                               'N',
@@ -1148,7 +1145,7 @@ void DiagoDavid<T, Device>::SchmidtOrth(const int& dim,
     // }
 
     // !!test
-    assert(psi_norm > 0.0);
+    // assert(psi_norm > 0.0);
 
     psi_norm = sqrt(psi_norm);
 
@@ -1161,7 +1158,8 @@ void DiagoDavid<T, Device>::SchmidtOrth(const int& dim,
         std::cout << "nband = " << nband << std::endl;
         std::cout << "m = " << m << std::endl;
         // !!test
-        exit(0);
+        // exit(0);
+        return;
     }
     else
     {

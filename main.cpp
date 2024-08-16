@@ -6,14 +6,16 @@
 
 #include <fast_matrix_market/fast_matrix_market.hpp>
 
+#include <fstream>
+
 #include <complex>
 #include <iostream>
 #include <random> // for random init of eigenvectors
 #include <memory> // smart pointers
 
-using T =
-// double;
-std::complex<double>;
+// #define _DEBUG_SMALL_MATRIX
+
+using T = std::complex<double>;// double;
 using Real = double;
 
 struct array_matrix {
@@ -29,27 +31,58 @@ int main(int argc, char **argv) {
     const hsolver::diag_comm_info comm_info = {0, 1};
 #endif
 
-    const int dim = 8; //25;
-    const int nband = 2; //5;
-    const int david_ndim = 2; //4;
-    const bool use_paw = false;
-
-    std::vector<Real> precondition(dim, 1.0);
-    std::cout << "precondition = "<< std::endl;
-    printVector(precondition, dim);
-
-    hsolver::DiagoDavid<T, base_device::DEVICE_CPU> dav(
-        precondition.data(),
-        nband, dim,
-        david_ndim,
-        use_paw, comm_info);
-
     // 构造H矩阵
-    std::vector<T> h_mat(dim * dim, T(0.0));
-    // 填充对角线元素为1+i
-    for (int i = 0; i < dim; ++i) {
-        h_mat[i * dim + i] = T(i+1.0);
+#ifndef _DEBUG_SMALL_MATRIX
+    // read matrix
+    // 打开文件
+    // std::ifstream file("matrix/Na5/Na5.mtx", std::ios::binary);
+    std::ifstream file("matrix/Si2/Si2.mtx", std::ios::binary);
+    if (!file) {
+        std::cerr << "Unable to open file" << std::endl;
+        return 1;
     }
+    fast_matrix_market::read_matrix_market_array(
+                file,
+                mat.nrows, mat.ncols,
+                mat.vals,
+                fast_matrix_market::row_major);
+    std::cout << "size of matrix: " << mat.nrows << " x " << mat.ncols << std::endl;
+    std::cout << "number of total elements: " << mat.vals.size() << std::endl;
+    if(mat.nrows != mat.ncols) {
+        std::cerr << "Matrix is not square" << std::endl;
+        return 1;
+    }
+    std::vector<T>& h_mat = mat.vals;
+#else
+    mat.nrows=5;
+#endif
+
+    const int dim = mat.nrows;//mat.nrows; //25;
+    const int nband = 10; //5;
+    const int david_ndim = 4; //4;
+    const bool use_paw = false;
+#ifdef _DEBUG_SMALL_MATRIX
+    std::vector<T> h_mat(dim * dim, T(0.0));
+    // 构造 H 矩阵
+// std::vector<std::complex<double>> h_mat(25 * 25, std::complex<double>(0.0, 0.0));
+// 填充对角线元素
+// for (int i = 0; i < dim; ++i) {
+//     h_mat[i * dim + i] = T(1.0, 0.0); // 一个示例值
+// }
+// 填充上三角部分
+// for (int i = 1; i < dim; ++i) {
+//     for (int j = 0; j < i; ++j) {
+//         T value = T(i, j);
+//         h_mat[i * dim + j] = value;
+//         h_mat[j * dim + i] = std::conj(value);
+//     }
+// }
+    // 填充对角线元素为1+i
+// #ifdef _DEBUG_SMALL_MATRIX
+//     for (int i = 0; i < dim; ++i) {
+//         h_mat[i * dim + i] = T(i+1.0);
+//     }
+// #endif
     // for (int i = 1; i < dim; ++i) {
     //     for (int j = 0; j < i; ++j) {
     //         T random_value = T(
@@ -60,12 +93,19 @@ int main(int argc, char **argv) {
     //         h_mat[j * dim + i] = std::conj(random_value);
     //     }
     // }
-
     std::cout << "h_mat = "<< std::endl; printVector(h_mat, dim);
-    // for (int i = 0; i < h_mat.size(); ++i) {
-    //     std::cout << h_mat[i].real() << " ";
-    //     if ((i + 1) % dim == 0) std::cout << std::endl; // 每 dim 个元素后换行
-    // }
+#endif
+
+    std::vector<Real> precondition(dim, 1.0);
+#ifdef _DEBUG_SMALL_MATRIX
+    std::cout << "precondition = "<< std::endl; printVector(precondition, dim);
+#endif
+    hsolver::DiagoDavid<T, base_device::DEVICE_CPU> dav(
+        precondition.data(),
+        nband, dim,
+        david_ndim,
+        use_paw, comm_info);
+
 
     auto hpsi_func = [h_mat](T *hpsi_out, T *psi_in,
                              const int nband_in, const int nbasis_in,
@@ -119,8 +159,9 @@ int main(int argc, char **argv) {
     //     std::cout << psi[i].real() << " ";
     //     if ((i + 1) % dim == 0) std::cout << std::endl; // 每 dim 个元素后换行
     // }
+#ifdef _DEBUG_SMALL_MATRIX
     std::cout << "initial eigenvectors:" << std::endl; printVector(psi, dim);
-
+#endif
     
     std::vector<Real> eigenvalue(nband, 1.0);
 
@@ -133,8 +174,14 @@ int main(int argc, char **argv) {
                         david_diag_thr, david_maxiter);
 
     std::cout << "sum_iter: " << sum_iter << std::endl;
-    std::cout << "eigenvalues:" << std::endl; printVector(eigenvalue, nband);
+    std::cout << "eigenvalues:" << std::endl;
+    // printArray(eigenvalue.data(), nband); //printVector(eigenvalue, nband);
+    for (int i = 0; i < nband; ++i) {
+        std::cout << eigenvalue[i] << " ";
+    }
+    std::cout << std::endl;
+#ifdef _DEBUG_SMALL_MATRIX
     std::cout << "eigenvectors:" << std::endl; printVector(psi, dim);
-
+#endif
     return 0;
 }

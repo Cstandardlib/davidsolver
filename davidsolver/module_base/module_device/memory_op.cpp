@@ -22,20 +22,24 @@ struct resize_memory_op<FPTYPE, base_device::DEVICE_CPU>
             free(arr);
         }
         arr = (FPTYPE*)malloc(sizeof(FPTYPE) * size);
-        std::string record_string;
-        if (record_in != nullptr)
-        {
-            record_string = record_in;
+        if(arr == nullptr) {
+            std::cerr << "Memory allocation failed" << std::endl;
+            exit(EXIT_FAILURE);
         }
-        else
-        {
-            record_string = "no_record";
-        }
+        // std::string record_string;
+        // if (record_in != nullptr)
+        // {
+        //     record_string = record_in;
+        // }
+        // else
+        // {
+        //     record_string = "no_record";
+        // }
 
-        if (record_string != "no_record")
-        {
-            // ModuleBase::Memory::record(record_string, sizeof(FPTYPE) * size);
-        }
+        // if (record_string != "no_record")
+        // {
+        //     // ModuleBase::Memory::record(record_string, sizeof(FPTYPE) * size);
+        // }
     }
 };
 
@@ -93,6 +97,10 @@ struct delete_memory_op<FPTYPE, base_device::DEVICE_CPU>
 {
     void operator()(const base_device::DEVICE_CPU* dev, FPTYPE* arr)
     {
+        if(arr == nullptr) {
+            std::cerr << "Memory deletion failed on nullptr!" << std::endl;
+            return;
+        }
         free(arr);
     }
 };
